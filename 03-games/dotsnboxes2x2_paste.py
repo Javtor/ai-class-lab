@@ -7,25 +7,12 @@ MAX_DEPTH = 6
 board_size = int(input())  # The size of the board.
 player_id = input()  # The ID of the player. 'A'=first player, 'B'=second player.
 
-shared_moves = {
-    'A2 R',
-    'B2 L',
-    'A1 R',
-    'B1 L',
-    'A1 T',
-    'A2 B',
-    'B1 T',
-    'B2 B',
-}
-
-col_moves = {'T', 'B'}
-row_moves = {'L', 'R'}
-
 
 def flatten_boxes(boxes):
     list1 = functools.reduce(
         lambda m, box: m + list(map(lambda side: f'{box[0]} {side}', list(box[1]))), boxes, [])
-    list2 = [i for i in list1 if not ((i[0]!='A' and i[-1] == 'L') or (i[1]!='1' and i[-1] == 'B'))]
+    list2 = [i for i in list1 if not (
+        (i[0] != 'A' and i[-1] == 'L') or (i[1] != '1' and i[-1] == 'B'))]
     return list2
 
 
@@ -42,9 +29,8 @@ def remove_move(boxes, move):
         if box[0] == move_box:
             new_sides = box[1].replace(move_side, '')
             clone[i] = (box[0], new_sides) if new_sides != '' else None
-        elif (move in shared_moves and 
-                ((move_box[0] == box[0][0] and move_side in col_moves) or 
-                (move_box[1] == box[0][1] and move_side in row_moves) )):
+        elif ((move_side == 'R' and move_box[1] == box[0][1] and ord(move_box[0])+1 == ord(box[0][0])) or
+                (move_side == 'T' and move_box[0] == box[0][0] and ord(move_box[1])+1 == ord(box[0][1])) ):
             new_sides = box[1].replace(opposites[move_side], '')
             clone[i] = (box[0], new_sides) if new_sides != '' else None
 
@@ -65,11 +51,12 @@ def is_candidate_closed_by(box, move):
 
     if box[0] == move_box and box[1] == move_side:  # closes box
         return True
-    elif move in shared_moves:
-        if box[0] != move_box and box[1] == opposites[move_side] and move_box[0] == box[0][0] and move_side in col_moves:  # closes same cloumn
-            return True
-        elif box[0] != move_box and box[1] == opposites[move_side] and move_box[1] == box[0][1] and move_side in row_moves:  # closes same row
-            return True
+    # closes same cloumn
+    if move_side == 'R' and move_box[1] == box[0][1] and ord(move_box[0])+1 == ord(box[0][0]):
+        return True
+    # closes same row
+    elif move_side == 'T' and move_box[0] == box[0][0] and ord(move_box[1])+1 == ord(box[0][1]):
+        return True
 
     return False
 
