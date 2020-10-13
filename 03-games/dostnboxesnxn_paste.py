@@ -72,9 +72,9 @@ def closed_boxes(boxes, move):
 def minimax(boxes, max_turn, max_score, min_score, depth, alpha, beta, prnt=False):
     # segunda optimizacion, cortar en profundidad y evaluar
     if depth == 0 or len(boxes) == 0:
-        if max_score*2 > board_size:
+        if max_score*2 > board_size*board_size:
             return 1000
-        elif min_score*2 > board_size:
+        elif min_score*2 > board_size*board_size:
             return -1000
         return max_score - min_score
 
